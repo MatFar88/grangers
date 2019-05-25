@@ -95,7 +95,7 @@ Inference on the unconditional Granger-causality spectrum is provided generating
 \examples{
 	RealGdp.rate.ts<-euro_area_indicators[,1]
 m3.rate.ts<-euro_area_indicators[,2]
-	inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3.rate.ts)
+	inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3.rate.ts,nboots=100)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary

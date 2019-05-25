@@ -62,7 +62,7 @@
 #'	m3.rate.ts<-euro_area_indicators[,2]
 #'	hicp.rate.ts<-euro_area_indicators[,4]
 #' 	inf_cond_m3.to.gdp.by.hicp_0.95<-
-#'	Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
+#'	Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=100)
 #' @references Politis D. N. and Romano  J. P., (1994). ''The Stationary
 #'    Bootstrap''. \emph{Journal of the American Statistical Association}, 89, 1303--1313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and

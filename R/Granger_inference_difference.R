@@ -84,7 +84,7 @@
 #' 	uncond_m3.to.gdp$Unconditional_causality_y.to.x+
 #'	-cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
 #' 	inf_diff_pre_hicp.to.gdp_0.95<-
-#' 	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
+#' 	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=100)
 #' @references Politis D. N. and Romano  J. P., (1994). ''The Stationary
 #'    Bootstrap''. \emph{Journal of the American Statistical Association}, 89, 1303--1313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
