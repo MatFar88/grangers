@@ -93,11 +93,9 @@ Inference on the unconditional Granger-causality spectrum is provided generating
 	\verb{y} (cause variable). It requires packages \href{https://CRAN.R-project.org/package=vars}{vars} and \href{https://CRAN.R-project.org/package=tseries}{tseries}.
 }
 \examples{
-bp_all<-array(0,dim=c(length(RealGdp.rate.ts),nboots,2))
-bp_all[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-bp_all[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-bp_used<-bp_all[,,c(1,2)]
-inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3_pre.rate.ts,bp=bp_used)
+	RealGdp.rate.ts<-euro_area_indicators[,1]
+m3.rate.ts<-euro_area_indicators[,2]
+	inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3.rate.ts)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary
@@ -108,7 +106,7 @@ Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 	Recent Theoretical Developments and Applications}.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.

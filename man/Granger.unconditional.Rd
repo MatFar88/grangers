@@ -52,8 +52,9 @@ by package \href{https://CRAN.R-project.org/package=vars}{vars}. For computation
 	It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
 }
 \examples{
-uncond_m3<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4,F)
-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"AIC")
+RealGdp.rate.ts<-euro_area_indicators[,1]
+m3.rate.ts<-euro_area_indicators[,2]
+uncond_m3<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4)
 }
 \references{
 Geweke, J., 1982. Measurement of linear dependence and feedback between
@@ -64,7 +65,7 @@ Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 	Recent Theoretical Developments and Applications}.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \link[vars]{VAR}.

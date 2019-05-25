@@ -7,7 +7,7 @@
 Granger.inference.difference(x, y, z, ic.chosen = "SC",
   max.lag = min(4, length(x) - 1), plot = F, type.chosen = "none",
   p = 0, p1 = 0, p2 = 0, nboots = 1000, conf = 0.95,
-  bp_orig = NULL, diff_ind = 0, ts_boot = 1)
+  bp_orig = NULL, ts_boot = 1)
 }
 \arguments{
 \item{x}{univariate time series.}
@@ -118,18 +118,17 @@ Inference on the difference between unconditional and conditional Granger-causal
 	respect to a time series \verb{y} (cause variable). It requires packages \href{https://CRAN.R-project.org/package=vars}{vars} and \href{https://CRAN.R-project.org/package=tseries}{tseries}.
 }
 \examples{
-uncond_m3.to.gdp<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4,F)
-cond_m3.to.gdp.by.hicp<-
-Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4,F)
-diff_cond_m3.to.gdp.by.hicp<-
-Granger_uncond_m3.to.gdp$Unconditional_causality_y.to.x-Granger_cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
-bp<-array(0,dim=c(length(RealGdp_pre.rate.ts),nboots,3))
-bp[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-bp[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-bp[,,3]<-tsbootstrap(hicp.rate.ts,nb=nboots)
-bp_used<-bp[,,c(1,2,3)]
-inf_diff_pre_hicp.to.gdp_0.95<-
-Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,bp=bp_used)
+	RealGdp.rate.ts<-euro_area_indicators[,1]
+m3.rate.ts<-euro_area_indicators[,2]
+hicp.rate.ts<-euro_area_indicators[,4]
+	uncond_m3.to.gdp<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4)
+	cond_m3.to.gdp.by.hicp<-
+	Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4)
+	diff_cond_m3.to.gdp.by.hicp<-
+	uncond_m3.to.gdp$Unconditional_causality_y.to.x+
+-cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
+	inf_diff_pre_hicp.to.gdp_0.95<-
+	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary
@@ -140,7 +139,7 @@ Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 	Recent Theoretical Developments and Applications}.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.

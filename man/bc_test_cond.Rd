@@ -5,7 +5,7 @@
 \title{Conditional Granger-causality test of Breitung and Candelon (2006)}
 \usage{
 bc_test_cond(x, y, z, ic.chosen = "SC", max.lag = min(4, length(x) -
-  1), plot = F, type.chosen = "none", p = 0, conf)
+  1), plot = F, type.chosen = "none", p = 0, conf = 0.95)
 }
 \arguments{
 \item{x}{univariate time series.}
@@ -29,9 +29,6 @@ spectrum. Defaults to FALSE.}
 It corresponds to the number of lags of the second VAR model. Defaults to 0.}
 
 \item{conf}{prescribed confidence level. It defaults to 0.95.}
-
-\item{plot}{logical; if TRUE, it returns the plot of computed F-test
-across frequencies with relative thresholds. Defaults to FALSE.}
 }
 \value{
 \verb{frequency}: frequencies used by Fast Fourier Transform.
@@ -62,14 +59,17 @@ Inference on the conditional Granger-causality spectrum is provided by
 It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
 }
 \examples{
-bc_test_cond(RealGdp_rate.ts,m3_rate.ts,hicp_rate.ts,ic.chosen="SC",max.lag=2)
+	RealGdp.rate.ts<-euro_area_indicators[,1]
+	m3.rate.ts<-euro_area_indicators[,2]
+	hicp.rate.ts<-euro_area_indicators[,4]	
+	cond_bc<-bc_test_cond(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,ic.chosen="SC",max.lag=2)
 }
 \references{
 Breitung, J., Candelon, B., 2006. Testing for short- and long-run causality: A frequency-domain approach. 
 	\emph{Journal of Econometrics}. \bold{132}, 2, 363--378.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \code{\link[vars]{VAR}}.

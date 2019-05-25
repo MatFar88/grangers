@@ -54,24 +54,27 @@
 #' @author Matteo Farne', Angela Montanari, \email{matteo.farne2@@unibo.it}
 #' @seealso \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.
 #' @examples
-#' bp_all<-array(0,dim=c(length(RealGdp.rate.ts),nboots,2))
-#' bp_all[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-#' bp_all[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-#' bp_used<-bp_all[,,c(1,2)]
-#' inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3_pre.rate.ts,bp=bp_used)
+#' 	RealGdp.rate.ts<-euro_area_indicators[,1]
+#'	m3.rate.ts<-euro_area_indicators[,2]
+#' 	inf_uncond_m3_0.95<-Granger.inference.unconditional(RealGdp.rate.ts,m3.rate.ts)
 #' @references Politis D. N. and Romano  J. P., (1994). ''The Stationary
 #'    Bootstrap''. \emph{Journal of the American Statistical Association}, 89, 1303--1313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 #' 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 #' 	Recent Theoretical Developments and Applications}.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars tseries
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
 Granger.inference.unconditional<-function (x, y, ic.chosen = "SC", max.lag = min(4, length(x) - 
     1), plot = F, type.chosen = "none",p=0,nboots = 1000, conf = 0.95, 
     bp = NULL,ts_boot=1) 
 {
+
     if (length(x) == 1) {
         return("The length of x is only 1")
     }
@@ -82,12 +85,17 @@ Granger.inference.unconditional<-function (x, y, ic.chosen = "SC", max.lag = min
         return("The chosen number of lags is larger than or equal to the time length")
     }
 
+    if(!("vars" %in% installed.packages())){
+	install.packages("vars")
+    }
+
+    if(!("tseries" %in% installed.packages())){
+	install.packages("tseries")
+    }
+
     if(ts_boot==1){
     if (is.array(bp) != TRUE) {
-        if (!("tseries" %in% installed.packages())) {
-            install.packages("tseries")
-            library(tseries)
-        }
+
         x_bp <- tsbootstrap(x, nb = nboots)
         y_bp <- tsbootstrap(y, nb = nboots)
     }
@@ -96,6 +104,14 @@ Granger.inference.unconditional<-function (x, y, ic.chosen = "SC", max.lag = min
         y_bp <- bp[, , 2]
     }
     freq.good = spec.pgram(y, plot = F)$freq/frequency(x)
+    }
+
+    if (p==0){
+       mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen)
+    }
+
+    if (p>0){
+       mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen,p=p)
     }
 
     delay_bp <- vector("numeric", nboots)
@@ -108,12 +124,12 @@ Granger.inference.unconditional<-function (x, y, ic.chosen = "SC", max.lag = min
   xy_mat<-as.data.frame(cbind(x_bp[, w], y_bp[, w]));
   colnames(xy_mat)<-c("x_bp","y_bp")
   if(p>0){
-  mod_bp<-VAR(xy_mat, type=type.chosen,p=mod$p)
-  G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], plot=F, type=type.chosen, p=mod$p)
+  mod_bp<-VAR(xy_mat, ic=ic.chosen, lag.max=max.lag, type.chosen,p=mod$p)
+  G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], plot=F, type.chosen, p=mod$p)
   }
   if(p==0){
   mod_bp<-VAR(xy_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], ic.chosen, 
             max.lag, F, type.chosen)
   }

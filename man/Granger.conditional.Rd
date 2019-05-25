@@ -60,20 +60,22 @@ Conditional Granger-causality spectrum was first defined in Geweke (1984). It
 to a time series \verb{y} (cause variable). It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
 }
 \examples{
-Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,max.lag=2)
-Granger.conditional(m3.rate.ts,RealGdp.rate.ts,hicp.rate.ts,"AIC")
-cond_m3.to.gdp.by.hicp<-Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4,F)
+	RealGdp.rate.ts<-euro_area_indicators[,1]
+	m3.rate.ts<-euro_area_indicators[,2]
+	hicp.rate.ts<-euro_area_indicators[,4]
+	cond_m3.to.gdp.by.hicp<-
+Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4)
 }
 \references{
 Geweke J., 1984. Measures of conditional linear dependence
-and feedback between time series. \emph{J. Am. Stat. Assoc}. \bold{79}, 907--915.
+	and feedback between time series. \emph{J. Am. Stat. Assoc}. \bold{79}, 907--915.
 
 Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 	Recent Theoretical Developments and Applications}.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \code{\link[vars]{VAR}}.

@@ -15,8 +15,6 @@
 #' @param p parameter \verb{p} to be passed to function \link[vars]{VAR}.
 #'	It corresponds to the number of lags of the second VAR model. Defaults to 0.
 #' @param conf prescribed confidence level. It defaults to 0.95.
-#' @param plot logical; if TRUE, it returns the plot of computed F-test
-#' 	across frequencies with relative thresholds. Defaults to FALSE.
 #' @description Inference on the unconditional Granger-causality spectrum is provided by
 #' 	the parametric test of Breitung and Candelon (2006).
 #' @return \verb{frequency}: frequencies used by Fast Fourier Transform.
@@ -31,14 +29,20 @@
 #' @author Matteo Farne', Angela Montanari, \email{matteo.farne2@@unibo.it}
 #' @seealso \code{\link[vars]{VAR}}.
 #' @examples
-#' bc_test_uncond(RealGdp_rate.ts,m3_rate.ts,ic.chosen="SC",max.lag=2)
+#'	RealGdp.rate.ts<-euro_area_indicators[,1]
+#'	m3.rate.ts<-euro_area_indicators[,2]
+#' 	uncond_bc<-bc_test_uncond(RealGdp.rate.ts,m3.rate.ts,ic.chosen="SC",max.lag=2)
 #' @references Breitung, J., Candelon, B., 2006. Testing for short- and long-run causality: A frequency-domain approach. 
 #' 	\emph{Journal of Econometrics}. \bold{132}, 2, 363--378.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
-bc_test_uncond<-function(x,y,ic.chosen="SC",max.lag=min(4,length(x)-1),plot=F,type.chosen="none",p=0,conf){
+bc_test_uncond<-function(x,y,ic.chosen="SC",max.lag=min(4,length(x)-1),plot=F,type.chosen="none",p=0,conf=0.95){
 
 if(length(x)==1){
 return("The length of x is only 1")
@@ -52,29 +56,28 @@ if(max.lag>length(x)-1){
 return("The chosen number of lags is larger than or equal to the time length")
 }
 
-if (!("vars" %in% installed.packages())) {
-            install.packages("vars")
-            library(vars)
-        }
+    if(!("vars" %in% installed.packages())){
+	install.packages("vars")
+    }
 
 if(p<=0){
-mod=VAR(cbind(x,y),lag.max=max.lag,ic=ic.chosen,type=type.chosen)
+mod=VAR(cbind(x,y),lag.max=max.lag,ic=ic.chosen,type.chosen)
 if(mod$p>1){
 p=mod$p
 }
 if(mod$p==1){
 p=2
-mod=VAR(cbind(x,y),lag.max=max.lag,ic=ic.chosen,type=type.chosen)
+mod=VAR(cbind(x,y),lag.max=max.lag,ic=ic.chosen,type.chosen)
 }
 }
 
 if(p>0){
 if(p>1){
-mod=VAR(cbind(x,y),p=p,ic=ic.chosen,type=type.chosen)
+mod=VAR(cbind(x,y),p=p,ic=ic.chosen,type.chosen)
 }
 if(p==1){
 p=2
-mod=VAR(cbind(x,y),p=p,ic=ic.chosen,type=type.chosen)
+mod=VAR(cbind(x,y),p=p,ic=ic.chosen,type.chosen)
 }
 }
 
@@ -113,6 +116,7 @@ sse<-sum(t(res_yes)%*%res_yes)
 
 F_test<-vector(mode="numeric",length(freq.good))
 F_test_pre<-vector(mode="numeric",length(freq.good))
+F_thr<-vector(mode="numeric",length(freq.good))
 for (l in 1:length(freq.good)){
 if(l<length(freq.good)){
 r_matrix<-r;

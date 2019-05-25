@@ -13,6 +13,10 @@
 #' @param max.lag maximum number of lags \verb{lag.max} 
 #' to be passed to function \code{\link[vars]{VAR}}.
 #' Defaults to \verb{min(4, length(x) - 1)}.
+#' @param plot logical; if TRUE, it returns the plot of unconditional Granger-causality
+#' 	spectra on both directions with computed thresholds. Defaults to FALSE.
+#' @param type.chosen parameter \verb{type} to be passed to function \code{\link[vars]{VAR}}.
+#'	Defaults to \verb{''none''}. Alternatives are \verb{c(''none'',''const'',''trend'')}.
 #' @param nboots number of bootstrap series to be computed by function \code{\link[tseries]{tsbootstrap}}
 #' 	 of package \href{https://CRAN.R-project.org/package=tseries}{tseries}. It defaults to 1000.
 #' @param conf prescribed confidence level. It defaults to 0.95.
@@ -54,23 +58,23 @@
 #' @author Matteo Farne', Angela Montanari, \email{matteo.farne2@@unibo.it}
 #' @seealso \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.
 #' @examples
-#' Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,plot=T)
-#' bp_all<-array(0,dim=c(length(RealGdp.rate.ts),nboots,3))
-#' bp_all[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-#' bp_all[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-#' bp_all[,,3]<-tsbootstrap(hicp.rate.ts,nb=nboots)
-#' bp_used<-bp_all[,,c(1,2,3)]
-#' inf_cond_m3.to.gdp.by.hicp_0.95<-Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,bp=bp_used)
-#' inf_cond_m3.to.gdp.by.hicp_0.90<-
-#' Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,conf=0.90,bp=bp_used)
+#' 	RealGdp.rate.ts<-euro_area_indicators[,1]
+#'	m3.rate.ts<-euro_area_indicators[,2]
+#'	hicp.rate.ts<-euro_area_indicators[,4]
+#' 	inf_cond_m3.to.gdp.by.hicp_0.95<-
+#'	Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
 #' @references Politis D. N. and Romano  J. P., (1994). ''The Stationary
 #'    Bootstrap''. \emph{Journal of the American Statistical Association}, 89, 1303--1313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 #' 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 #' 	Recent Theoretical Developments and Applications}.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars tseries
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
 Granger.inference.conditional<-function (x, y, z, ic.chosen = "SC", max.lag = min(4, length(x) - 
     1), plot = F, type.chosen = "none", p1=0, p2=0, nboots = 1000, conf = 0.95, 
@@ -90,29 +94,34 @@ Granger.inference.conditional<-function (x, y, z, ic.chosen = "SC", max.lag = mi
         return("The chosen number of lags is larger than or equal to the time length")
     }
 
+    if(!("vars" %in% installed.packages())){
+	install.packages("vars")
+    }
+
+    if(!("tseries" %in% installed.packages())){
+	install.packages("tseries")
+    }
+
 	if (p1==0){
-	model1=VAR(cbind(x,z),ic=ic.chosen,lag.max=max.lag,type=type.chosen)
+	model1=VAR(cbind(x,z),ic=ic.chosen,lag.max=max.lag,type.chosen)
 	}
 
 	if (p1>0){
-	model1=VAR(cbind(x,z),p=p,type=type.chosen)
+	model1=VAR(cbind(x,z),p=p1,type.chosen)
 	}
 	
 	if (p2==0){
-	model2=VAR(cbind(x,y,z),ic=ic.chosen,lag.max=max.lag,type=type.chosen)
+	model2=VAR(cbind(x,y,z),ic=ic.chosen,lag.max=max.lag,type.chosen)
 	}
 
 	if (p2>0){
-	model2=VAR(cbind(x,y,z),p=p,type=type.chosen)
+	model2=VAR(cbind(x,y,z),p=p2,type.chosen)
 	}
 
     if(ts_boot==1){
     freq.good = spec.pgram(y, plot = F)$freq/frequency(y)
     if (is.array(bp) != TRUE) {
-        if (!("tseries" %in% installed.packages())) {
-            install.packages("tseries")
-            library(tseries)
-        }
+
         x_bp <- tsbootstrap(x, nb = nboots)
         y_bp <- tsbootstrap(y, nb = nboots)
         z_bp <- tsbootstrap(z, nb = nboots)
@@ -143,15 +152,15 @@ Granger.inference.conditional<-function (x, y, z, ic.chosen = "SC", max.lag = mi
   colnames(xz_mat)<-c("x_bp","z_bp")
   colnames(xyz_mat)<-c("x2_bp","y2_bp","z2_bp")
   if(p1>0 && p2>0){
-  model1_bp<-VAR(xz_mat, type=type.chosen,p=model1$p)
-  model2_bp<-VAR(xyz_mat, type=type.chosen,p=model2$p)
-  G.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], plot=F, type=type.chosen, p1=model1$p,p2=model2$p)
+  model1_bp<-VAR(xz_mat, type.chosen,p=model1$p)
+  model2_bp<-VAR(xyz_mat, type.chosen,p=model2$p)
+  G.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], plot=F, type.chosen, p1=model1$p,p2=model2$p)
   }
   if(p1==0 && p2==0){
   model1_bp<-VAR(xz_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   model2_bp<-VAR(xyz_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   G.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], ic.chosen, 
             max.lag, F, type.chosen)
   }

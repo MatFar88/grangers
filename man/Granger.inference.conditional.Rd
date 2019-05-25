@@ -24,6 +24,12 @@ Defaults to ''SC'' (Schwarz criterion). Alternatives are \verb{c(''AIC'',''HQ'',
 to be passed to function \code{\link[vars]{VAR}}.
 Defaults to \verb{min(4, length(x) - 1)}.}
 
+\item{plot}{logical; if TRUE, it returns the plot of unconditional Granger-causality
+spectra on both directions with computed thresholds. Defaults to FALSE.}
+
+\item{type.chosen}{parameter \verb{type} to be passed to function \code{\link[vars]{VAR}}.
+Defaults to \verb{''none''}. Alternatives are \verb{c(''none'',''const'',''trend'')}.}
+
 \item{p1}{parameter \verb{p} to be passed to function \link[vars]{VAR}.
 It corresponds to the number of lags of the first VAR model. Defaults to 0.}
 
@@ -92,15 +98,11 @@ respect to a time series \verb{y} (cause variable). It requires packages \href{h
 and \href{https://CRAN.R-project.org/package=tseries}{tseries}.
 }
 \examples{
-Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,plot=T)
-bp_all<-array(0,dim=c(length(RealGdp.rate.ts),nboots,3))
-bp_all[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-bp_all[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-bp_all[,,3]<-tsbootstrap(hicp.rate.ts,nb=nboots)
-bp_used<-bp_all[,,c(1,2,3)]
-inf_cond_m3.to.gdp.by.hicp_0.95<-Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,bp=bp_used)
-inf_cond_m3.to.gdp.by.hicp_0.90<-
-Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,conf=0.90,bp=bp_used)
+	RealGdp.rate.ts<-euro_area_indicators[,1]
+m3.rate.ts<-euro_area_indicators[,2]
+hicp.rate.ts<-euro_area_indicators[,4]
+	inf_cond_m3.to.gdp.by.hicp_0.95<-
+Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary
@@ -111,7 +113,7 @@ Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 	Recent Theoretical Developments and Applications}.
 
 Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-\emph{Submitted}.
+<arXiv:1803.00374>, \emph{Submitted}.
 }
 \seealso{
 \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.

@@ -74,30 +74,44 @@
 #' @author Matteo Farne', Angela Montanari, \email{matteo.farne2@@unibo.it}
 #' @seealso \link[vars]{VAR} and \code{\link[tseries]{tsbootstrap}}.
 #' @examples
-#' uncond_m3.to.gdp<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4,F)
-#' cond_m3.to.gdp.by.hicp<-
-#' Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4,F)
-#' diff_cond_m3.to.gdp.by.hicp<-
-#' Granger_uncond_m3.to.gdp$Unconditional_causality_y.to.x-Granger_cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
-#' bp<-array(0,dim=c(length(RealGdp_pre.rate.ts),nboots,3))
-#' bp[,,1]<-tsbootstrap(RealGdp.rate.ts,nb=nboots)
-#' bp[,,2]<-tsbootstrap(m3.rate.ts,nb=nboots)
-#' bp[,,3]<-tsbootstrap(hicp.rate.ts,nb=nboots)
-#' bp_used<-bp[,,c(1,2,3)]
-#' inf_diff_pre_hicp.to.gdp_0.95<-
-#' Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,bp=bp_used)
+#' 	RealGdp.rate.ts<-euro_area_indicators[,1]
+#'	m3.rate.ts<-euro_area_indicators[,2]
+#'	hicp.rate.ts<-euro_area_indicators[,4]
+#' 	uncond_m3.to.gdp<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4)
+#' 	cond_m3.to.gdp.by.hicp<-
+#' 	Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4)
+#' 	diff_cond_m3.to.gdp.by.hicp<-
+#' 	uncond_m3.to.gdp$Unconditional_causality_y.to.x+
+#'	-cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
+#' 	inf_diff_pre_hicp.to.gdp_0.95<-
+#' 	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts)
 #' @references Politis D. N. and Romano  J. P., (1994). ''The Stationary
 #'    Bootstrap''. \emph{Journal of the American Statistical Association}, 89, 1303--1313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 #' 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 #' 	Recent Theoretical Developments and Applications}.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars tseries
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
 Granger.inference.difference<-function (x, y, z, ic.chosen = "SC", max.lag = min(4, length(x) - 
-    1), plot = F, type.chosen = "none", p=0,p1=0,p2=0,nboots = 1000, conf=0.95, bp_orig = NULL,diff_ind=0,ts_boot=1)
+    1), plot = F, type.chosen = "none", p=0,p1=0,p2=0,nboots = 1000, conf=0.95, bp_orig = NULL,ts_boot=1)
 {
+
+
+    if (p==0){
+       mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen)
+    }
+
+    if (p>0){
+       mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen,p=p)
+    }
+
+
     if (length(x) == 1) {
         return("The length of x is only 1")
     }
@@ -108,30 +122,36 @@ Granger.inference.difference<-function (x, y, z, ic.chosen = "SC", max.lag = min
         return("The chosen number of lags is larger than or equal to the time length")
     }
 
-    if(ts_boot==1 && diff_ind==0){
-    if (is.array(bp_orig) != TRUE) {
-        if (!("tseries" %in% installed.packages())) {
-            install.packages("tseries")
-            library(tseries)
-        }
-        x_bp <- tsbootstrap(x, nb = nboots)
-        y_bp <- tsbootstrap(y, nb = nboots)
-    }
-    if (is.array(bp_orig) == TRUE) {
-        x_bp <- bp_orig[, , 1]
-        y_bp <- bp_orig[, , 2]
-    }
-    freq.good = spec.pgram(y, plot = F)$freq/frequency(y)
-    }
-
     ##
 
-if(ts_boot==1 && diff_ind==0){
+    if(!("vars" %in% installed.packages())){
+	install.packages("vars")
+    }
+
+    if(!("tseries" %in% installed.packages())){
+	install.packages("tseries")
+    }
+
+
+	if (p1==0){
+	model1=VAR(cbind(x,z),ic=ic.chosen,lag.max=max.lag,type.chosen)
+	}
+
+	if (p1>0){
+	model1=VAR(cbind(x,z),p=p1,type.chosen)
+	}
+	
+	if (p2==0){
+	model2=VAR(cbind(x,y,z),ic=ic.chosen,lag.max=max.lag,type.chosen)
+	}
+
+	if (p2>0){
+	model2=VAR(cbind(x,y,z),p=p2,type.chosen)
+	}
+
+if(ts_boot==1){
     if (is.array(bp_orig) != TRUE) {
-        if (!("tseries" %in% installed.packages())) {
-            install.packages("tseries")
-            library(tseries)
-        }
+
         x_bp <- tsbootstrap(x, nb = nboots)
         y_bp <- tsbootstrap(y, nb = nboots)
         z_bp <- tsbootstrap(z, nb = nboots)
@@ -159,12 +179,12 @@ if(ts_boot==1 && diff_ind==0){
   xy_mat<-as.data.frame(cbind(x_bp[, w], y_bp[, w]));
   colnames(xy_mat)<-c("x_bp","y_bp")
   if(p>0){
-  mod_bp<-VAR(xy_mat, type=type.chosen,p=mod$p)
-  G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], plot=F, type=type.chosen, p=mod$p)
+  mod_bp<-VAR(xy_mat, type.chosen,p=mod$p)
+  G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], plot=F, type.chosen, p=mod$p)
   }
   if(p==0){
   mod_bp<-VAR(xy_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   G.xy <- Granger.unconditional(xy_mat[, 1], xy_mat[, 2], ic.chosen, 
             max.lag, F, type.chosen)
 
@@ -181,15 +201,15 @@ if(ts_boot==1 && diff_ind==0){
   colnames(xz_mat)<-c("x_bp","z_bp")
   colnames(xyz_mat)<-c("x_bp","y_bp","z_bp")
   if(p1>0 && p2>0){
-  model1_bp<-VAR(xz_mat, type=type.chosen,p=model1$p)
-  model2_bp<-VAR(xyz_mat, type=type.chosen,p=model2$p)
-  GG.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], plot=F, type=type.chosen, p1=model1$p,p2=model2$p)
+  model1_bp<-VAR(xz_mat, type.chosen,p=model1$p)
+  model2_bp<-VAR(xyz_mat, type.chosen,p=model2$p)
+  GG.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], plot=F, type.chosen, p1=model1$p,p2=model2$p)
   }
   if(p1==0 && p2==0){
   model1_bp<-VAR(xz_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   model2_bp<-VAR(xyz_mat, ic=ic.chosen, 
-            lag.max=max.lag, type=type.chosen)
+            lag.max=max.lag, type.chosen)
   GG.xy <- Granger.conditional(xyz_mat[, 1], xyz_mat[, 2], xyz_mat[, 3], ic.chosen, 
             max.lag, F, type.chosen)
   }
@@ -225,12 +245,12 @@ if(ts_boot==1 && diff_ind==0){
 
     n <- G.xy$n
 
-    if(diff_ind==0){
+
     GG_x_orig <- Granger.unconditional(x, y, ic.chosen, max.lag, 
         F)$Unconditional_causality_y.to.x
     GG_x.on.z <- Granger.conditional(x, y, z, ic.chosen, max.lag, 
         F)$Conditional_causality_y.to.x.on.z
-    }
+
 
     q_diff_x_inf <- quantile(top_diff_y.to.x.on.z_bp_signed[stationary],(1-conf)/2)
     q_diff_x_sup <- quantile(top_diff_y.to.x.on.z_bp_signed[stationary],1-(1-conf)/2) 
@@ -247,12 +267,10 @@ if(ts_boot==1 && diff_ind==0){
     signif_diff_max_inf <- which(diff_GG < q_diff_max_inf)
 
 
-    if(two_tail==1){
     GG <- list(freq.good, n, nboots, conf, stat_yes, non_stationarity_rate, non_stationarity_rate_1, non_stationarity_rate_2, 
 	q_diff_x_sup, q_diff_x_inf, freq.good[signif_diff_x_sup], freq.good[signif_diff_x_inf],q_diff_max_sup, q_diff_max_inf, freq.good[signif_diff_max_sup],freq.good[signif_diff_max_inf])
     names(GG) <- c("frequency", "n", "nboots", "confidence_level", "stat_yes", "non_stationarity_rate", "non_stationarity_rate_1", "non_stationarity_rate_2", 
         "quantile_difference_sup", "quantile_difference_inf", "freq_sup","freq_inf","quantile_difference_max_sup", "quantile_difference_max_inf", "freq_max_sup","freq_max_inf")
-    }
 
     }
 

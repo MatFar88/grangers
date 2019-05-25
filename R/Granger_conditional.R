@@ -35,17 +35,23 @@
 #' @author Matteo Farne', \email{matteo.farne2@@unibo.it}
 #' @seealso \code{\link[vars]{VAR}}.
 #' @examples
-#' Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,max.lag=2)
-#' Granger.conditional(m3.rate.ts,RealGdp.rate.ts,hicp.rate.ts,"AIC")
-#' cond_m3.to.gdp.by.hicp<-Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4,F)
+#' 	RealGdp.rate.ts<-euro_area_indicators[,1]
+#' 	m3.rate.ts<-euro_area_indicators[,2]
+#' 	hicp.rate.ts<-euro_area_indicators[,4]
+#' 	cond_m3.to.gdp.by.hicp<-
+#'	Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4)
 #' @references Geweke J., 1984. Measures of conditional linear dependence
-#' and feedback between time series. \emph{J. Am. Stat. Assoc}. \bold{79}, 907--915.
+#' 	and feedback between time series. \emph{J. Am. Stat. Assoc}. \bold{79}, 907--915.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 #' 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 #' 	Recent Theoretical Developments and Applications}.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
 Granger.conditional<-function(x,y,z,ic.chosen="SC",max.lag=min(4,length(x)-1),plot=F,type.chosen="none",p1=0,p2=0){
 
@@ -67,20 +73,19 @@ return("The chosen number of lags is larger than or equal to the time length")
 
 ##Ding et al.2006
 
-if (!("vars" %in% installed.packages())) {
-            install.packages("vars")
-            library(vars)
-        }
-
 dd_1<-cbind(x,z)
 dd_2<-cbind(x,y,z)
 
+if(!("vars" %in% installed.packages())){
+install.packages("vars")
+}
+
 if (p1==0){
-model1=VAR(dd_1,ic=ic.chosen,lag.max=max.lag,type=type.chosen)
+model1=VAR(dd_1,ic=ic.chosen,lag.max=max.lag,type.chosen)
 }
 
 if (p1>0){
-model1=VAR(dd_1,p=p1,type=type.chosen)
+model1=VAR(dd_1,p=p1,type.chosen)
 }
 
 freq.good=spec.pgram(y,plot=F)$freq/frequency(x);
@@ -102,11 +107,11 @@ ADD_x1=array(0,dim=c(model1$K,model1$K,length(freq.good)))
 H1_1=array(0,dim=c(model1$K,model1$K,length(freq.good)))
 
 if (p2==0){
-model2=VAR(dd_2,ic=ic.chosen,lag.max=max.lag,type=type.chosen)
+model2=VAR(dd_2,ic=ic.chosen,lag.max=max.lag,type.chosen)
 }
 
 if (p2>0){
-model2=VAR(dd_2,p=p2,type=type.chosen)
+model2=VAR(dd_2,p=p2,type.chosen)
 }
 
 coef_model2=array(0,dim=c(model2$K,model2$K,model2$p))

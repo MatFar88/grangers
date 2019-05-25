@@ -1,5 +1,6 @@
 #' Unconditional Granger-causality estimation
 #'
+#'
 #' \verb{Granger.unconditional} calculates the Granger-causality unconditional spectrum of
 #' 	a time series \verb{x} (effect variable) respect to a time series \verb{y} (cause variable).
 #' 	It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
@@ -29,16 +30,21 @@
 #' @author Matteo Farne', Angela Montanari, \email{matteo.farne2@@unibo.it}
 #' @seealso \link[vars]{VAR}.
 #' @examples
-#'	uncond_m3<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4,F)
-#'	Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"AIC")
+#'	RealGdp.rate.ts<-euro_area_indicators[,1]
+#'	m3.rate.ts<-euro_area_indicators[,2]
+#'	uncond_m3<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4)
 #' @references Geweke, J., 1982. Measurement of linear dependence and feedback between
 #'	multiple time series. \emph{J. Am. Stat. Assoc}. \bold{77}, 304--313.
 #' @references Ding, M., Chen, Y., Bressler, S.L., 2006. Granger Causality: Basic Theory and
 #' 	Application to Neuroscience, Chap.17. \emph{Handbook of Time Series Analysis
 #' 	Recent Theoretical Developments and Applications}.
 #' @references Farne', M., Montanari, A., 2018. A bootstrap test to detect prominent Granger-causalities across frequencies. 
-#'	\emph{Submitted}.
+#'	<arXiv:1803.00374>, \emph{Submitted}.
 #' @export
+#' @import vars
+#' @importFrom graphics abline par
+#' @importFrom stats coef frequency median pf qf quantile residuals spec.pgram
+#' @importFrom utils install.packages installed.packages
 
 Granger.unconditional<-function(x,y,ic.chosen="SC",max.lag=min(4,length(x)-1),plot=F,type.chosen="none",p=0){
 
@@ -55,17 +61,16 @@ if(max.lag>length(x)-1){
 return("The chosen number of lags is larger than or equal to the time length")
 }
 
-if (!("vars" %in% installed.packages())) {
-            install.packages("vars")
-            library(vars)
-        }
+if(!("vars" %in% installed.packages())){
+install.packages("vars")
+}
 
 if (p==0){
-mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type=type.chosen)
+mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen)
 }
 
 if (p>0){
-mod=VAR(cbind(x,y),p=p,type=type.chosen)
+mod=VAR(cbind(x,y),p=p,type.chosen)
 }
 
 coef_mod=array(0,dim=c(mod$K,mod$K,mod$p))
