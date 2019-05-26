@@ -121,14 +121,8 @@ Inference on the difference between unconditional and conditional Granger-causal
 	RealGdp.rate.ts<-euro_area_indicators[,1]
 m3.rate.ts<-euro_area_indicators[,2]
 hicp.rate.ts<-euro_area_indicators[,4]
-	uncond_m3.to.gdp<-Granger.unconditional(RealGdp.rate.ts,m3.rate.ts,"SC",4)
-	cond_m3.to.gdp.by.hicp<-
-	Granger.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,"SC",4)
-	diff_cond_m3.to.gdp.by.hicp<-
-	uncond_m3.to.gdp$Unconditional_causality_y.to.x+
--cond_m3.to.gdp.by.hicp$Conditional_causality_y.to.x.on.z
 	inf_diff_pre_hicp.to.gdp_0.95<-
-	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=100)
+	Granger.inference.difference(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=10)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary

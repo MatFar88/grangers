@@ -102,7 +102,7 @@ and \href{https://CRAN.R-project.org/package=tseries}{tseries}.
 m3.rate.ts<-euro_area_indicators[,2]
 hicp.rate.ts<-euro_area_indicators[,4]
 	inf_cond_m3.to.gdp.by.hicp_0.95<-
-Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=100)
+Granger.inference.conditional(RealGdp.rate.ts,m3.rate.ts,hicp.rate.ts,nboots=10)
 }
 \references{
 Politis D. N. and Romano  J. P., (1994). ''The Stationary
