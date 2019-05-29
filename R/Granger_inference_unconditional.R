@@ -85,13 +85,18 @@ Granger.inference.unconditional<-function (x, y, ic.chosen = "SC", max.lag = min
         return("The chosen number of lags is larger than or equal to the time length")
     }
 
-    if(!("vars" %in% installed.packages())){
-	install.packages("vars")
-    }
+if(!require("vars")){
+return("The packages 'vars' could not be found. Please install it to 
+proceed.")
+}
 
-    if(!("tseries" %in% installed.packages())){
-	install.packages("tseries")
-    }
+if(!require("tseries")){
+return("The packages 'tseries' could not be found. Please install it to 
+proceed.")
+}
+
+require(vars)
+require(tseries)
 
     if(ts_boot==1){
     if (is.array(bp) != TRUE) {

@@ -94,13 +94,20 @@ Granger.inference.conditional<-function (x, y, z, ic.chosen = "SC", max.lag = mi
         return("The chosen number of lags is larger than or equal to the time length")
     }
 
-    if(!("vars" %in% installed.packages())){
-	install.packages("vars")
-    }
 
-    if(!("tseries" %in% installed.packages())){
-	install.packages("tseries")
-    }
+if(!require("vars")){
+return("The packages 'vars' could not be found. Please install it to 
+proceed.")
+}
+
+if(!require("tseries")){
+return("The packages 'tseries' could not be found. Please install it to 
+proceed.")
+}
+
+require(vars)
+require(tseries)
+
 
 	if (p1==0){
 	model1=VAR(cbind(x,z),ic=ic.chosen,lag.max=max.lag,type.chosen)

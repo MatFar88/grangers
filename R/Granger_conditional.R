@@ -76,9 +76,12 @@ return("The chosen number of lags is larger than or equal to the time length")
 dd_1<-cbind(x,z)
 dd_2<-cbind(x,y,z)
 
-if(!("vars" %in% installed.packages())){
-install.packages("vars")
+if(!require("vars")){
+message("The packages 'vars' could not be found. Please install it to 
+proceed.")
 }
+
+require(vars)
 
 if (p1==0){
 model1=VAR(dd_1,ic=ic.chosen,lag.max=max.lag,type.chosen)

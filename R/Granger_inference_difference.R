@@ -118,13 +118,19 @@ Granger.inference.difference<-function (x, y, z, ic.chosen = "SC", max.lag = min
 
     ##
 
-    if(!("vars" %in% installed.packages())){
-	install.packages("vars")
-    }
 
-    if(!("tseries" %in% installed.packages())){
-	install.packages("tseries")
-    }
+if(!require("vars")){
+return("The packages 'vars' could not be found. Please install it to 
+proceed.")
+}
+
+if(!require("tseries")){
+return("The packages 'tseries' could not be found. Please install it to 
+proceed.")
+}
+
+require(vars)
+require(tseries)
 
 
 	if (p1==0){

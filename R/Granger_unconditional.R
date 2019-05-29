@@ -61,9 +61,12 @@ if(max.lag>length(x)-1){
 return("The chosen number of lags is larger than or equal to the time length")
 }
 
-if(!("vars" %in% installed.packages())){
-install.packages("vars")
+if(!require("vars")){
+message("The packages 'vars' could not be found. Please install it to 
+proceed.")
 }
+
+require(vars)
 
 if (p==0){
 mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen)
