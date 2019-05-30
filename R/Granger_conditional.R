@@ -81,7 +81,7 @@ message("The packages 'vars' could not be found. Please install it to
 proceed.")
 }
 
-requireNamespace(vars)
+requireNamespace("vars")
 
 if (p1==0){
 model1=VAR(dd_1,ic=ic.chosen,lag.max=max.lag,type.chosen)

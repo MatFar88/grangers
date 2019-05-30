@@ -95,8 +95,8 @@ return("The packages 'tseries' could not be found. Please install it to
 proceed.")
 }
 
-requireNamespace(vars)
-requireNamespace(tseries)
+requireNamespace("vars")
+requireNamespace("tseries")
 
     if(ts_boot==1){
     if (is.array(bp) != TRUE) {

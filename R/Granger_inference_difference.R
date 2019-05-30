@@ -129,8 +129,8 @@ return("The packages 'tseries' could not be found. Please install it to
 proceed.")
 }
 
-requireNamespace(vars)
-requireNamespace(tseries)
+requireNamespace("vars")
+requireNamespace("tseries")
 
 
 	if (p1==0){

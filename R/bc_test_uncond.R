@@ -60,7 +60,7 @@ if(!requireNamespace("vars")){
 return("The packages 'vars' could not be found. Please install it to 
 proceed.")
 }
-requireNamespace(vars)
+requireNamespace("vars")
 
 if(p<=0){
 mod=VAR(cbind(x,y),lag.max=max.lag,ic=ic.chosen,type.chosen)
