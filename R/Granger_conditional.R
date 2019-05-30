@@ -2,7 +2,7 @@
 #'
 #' \verb{Granger.conditional} calculates the Granger-causality conditional spectrum of a
 #' 	time series \verb{x} (effect variable) on a time series \verb{z} (conditioning variable) respect
-#'	to a time series \verb{y} (cause variable). It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
+#'	to a time series \verb{y} (cause variable). It requireNamespaces package \href{https://CRAN.R-project.org/package=vars}{vars}.
 #'
 #' @param x univariate time series.
 #' @param y  univariate time series (of the same length of \verb{x}).
@@ -76,12 +76,12 @@ return("The chosen number of lags is larger than or equal to the time length")
 dd_1<-cbind(x,z)
 dd_2<-cbind(x,y,z)
 
-if(!require("vars")){
+if(!requireNamespace("vars")){
 message("The packages 'vars' could not be found. Please install it to 
 proceed.")
 }
 
-require(vars)
+requireNamespace(vars)
 
 if (p1==0){
 model1=VAR(dd_1,ic=ic.chosen,lag.max=max.lag,type.chosen)

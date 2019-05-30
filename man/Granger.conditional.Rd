@@ -57,7 +57,7 @@ Conditional Granger-causality spectrum was first defined in Geweke (1984). It
 \details{
 \verb{Granger.conditional} calculates the Granger-causality conditional spectrum of a
 	time series \verb{x} (effect variable) on a time series \verb{z} (conditioning variable) respect
-to a time series \verb{y} (cause variable). It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
+to a time series \verb{y} (cause variable). It requireNamespaces package \href{https://CRAN.R-project.org/package=vars}{vars}.
 }
 \examples{
 	RealGdp.rate.ts<-euro_area_indicators[,1]

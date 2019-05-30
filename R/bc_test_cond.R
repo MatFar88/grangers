@@ -58,11 +58,11 @@ if(max.lag>length(x)-1){
 return("The chosen number of lags is larger than or equal to the time length")
 }
 
-if(!require("vars")){
+if(!requireNamespace("vars")){
 return("The packages 'vars' could not be found. Please install it to 
 proceed.")
 }
-require(vars)
+requireNamespace(vars)
 
 
 if(p<=0){

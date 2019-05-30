@@ -54,7 +54,7 @@ Inference on the unconditional Granger-causality spectrum is provided by
 \details{
 \verb{bc_test_uncond} calculates the test of Breitung and Candelon (2006) on the unconditional Granger-causality 
 	of a time series \verb{x} (effect variable) respect to a time series \verb{y} (cause variable). 
-It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
+It requireNamespaces package \href{https://CRAN.R-project.org/package=vars}{vars}.
 }
 \examples{
 RealGdp.rate.ts<-euro_area_indicators[,1]

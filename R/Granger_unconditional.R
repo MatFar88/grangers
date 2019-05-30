@@ -3,7 +3,7 @@
 #'
 #' \verb{Granger.unconditional} calculates the Granger-causality unconditional spectrum of
 #' 	a time series \verb{x} (effect variable) respect to a time series \verb{y} (cause variable).
-#' 	It requires package \href{https://CRAN.R-project.org/package=vars}{vars}.
+#' 	It requireNamespaces package \href{https://CRAN.R-project.org/package=vars}{vars}.
 #'
 #' @param x univariate time series.
 #' @param y  univariate time series (of the same length of \verb{x}).
@@ -61,12 +61,12 @@ if(max.lag>length(x)-1){
 return("The chosen number of lags is larger than or equal to the time length")
 }
 
-if(!require("vars")){
+if(!requireNamespace("vars")){
 message("The packages 'vars' could not be found. Please install it to 
 proceed.")
 }
 
-require(vars)
+requireNamespace(vars)
 
 if (p==0){
 mod=VAR(cbind(x,y),ic=ic.chosen,lag.max=max.lag,type.chosen)
