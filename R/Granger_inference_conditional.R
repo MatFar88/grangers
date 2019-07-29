@@ -126,20 +126,39 @@ requireNamespace("tseries")
 	}
 
     if(ts_boot==1){
-    freq.good = spec.pgram(y, plot = F)$freq/frequency(y)
+    #freq.good = spec.pgram(y, plot = F)$freq
     if (is.array(bp) != TRUE) {
 
-        x_bp <- tsbootstrap(x, nb = nboots)
-        y_bp <- tsbootstrap(y, nb = nboots)
-        z_bp <- tsbootstrap(z, nb = nboots)
-    }
-    if (is.array(bp) == TRUE) {
-        x_bp <- bp[, , 1]
-        y_bp <- bp[, , 2]
-        z_bp <- bp[, , 3]
+	x_bp<-array(0, dim = c(length(x)-model1$p,nboots))
+	y_bp<-array(0, dim = c(length(y)-model1$p,nboots))
+	z_bp<-array(0, dim = c(length(y)-model1$p,nboots))
+
+	pred_model1_x<-model1$varresult$x$fitted
+	pred_model1_z<-model1$varresult$z$fitted
+
+	res_x1_s<- array(0, dim = c(length(x)-model1$p,nboots))
+     	res_z1_s<- array(0, dim = c(length(y)-model1$p,nboots))
+
+	for(w in 1:nboots){
+	res_x1_s[,w]<-sample(model1$varresult$x$res)
+	x_bp[,w]<-pred_model1_x+res_x1_s[,w]
+	ind_x1_s<-as.numeric(names(sample(model1$varresult$x$res)))
+	res_z1_s[,w]<-model1$varresult$z$res[ind_x1_s]
+	z_bp[,w]<-pred_model1_z+res_z1_s[,w]
+	}
+	##
+
+      y_bp <- tsbootstrap(y[(1+model1$p):length(y)], nb = nboots)
 
     }
-    freq.good = spec.pgram(y, plot = F)$freq/frequency(y)
+    if (is.array(bp) == TRUE) {
+
+	  x_bp <- bp[, , 1]
+	  y_bp <- bp[, , 2]
+ 	  z_bp <- bp[, , 3]
+
+    }
+
     }
 
       delay1_bp <- vector("numeric", nboots)
@@ -150,6 +169,7 @@ requireNamespace("tseries")
     top_bp_y.to.x.on.z <- vector("numeric", nboots)
     freq.curr.l<-vector("numeric", nboots)
     stat_rate <- vector("numeric", nboots)
+    freq.good = spec.pgram(y_bp[,w], plot = F)$freq
     cause_bp_y.to.x.on.z <- array(0, dim = c(nboots, length(freq.good)))
 
     for (w in 1:nboots) {
@@ -208,13 +228,19 @@ requireNamespace("tseries")
     
     n <- G.xy$n
 
-    GG_x.on.z<-Granger.conditional(x,y,z,ic.chosen,max.lag,F)$Conditional_causality_y.to.x.on.z
+    GG_list<-Granger.conditional(x,y,z,ic.chosen,max.lag,F)
+
+    freq.good<-GG_list$frequency
+    
+    GG_x.on.z<-GG_list$Conditional_causality_y.to.x.on.z
+    
     signif_x.on.z<-which(GG_x.on.z>q_x.on.z)
+
     signif_max_x.on.z<-which(GG_x.on.z>q_max_x.on.z)
 
-    GG <- list(freq.good, n, nboots, conf, stat_yes,  non_stationarity_rate_1, 
+    GG <- list(freq.good, n, GG_x.on.z, nboots, conf, stat_yes,  non_stationarity_rate_1, 
         non_stationarity_rate_2, mean(delay1_bp[test_stationarity_1==0]),mean(delay2_bp[test_stationarity_2==0]), q_x.on.z, freq.good[signif_x.on.z],q_max_x.on.z,freq.good[signif_max_x.on.z])
-    names(GG) <- c("frequency", "n", "nboots","confidence_level","stat_yes", "non_stationarity_rate_1", "non_stationarity_rate_2", "delay1_mean","delay2_mean","quantile_conditional_causality_y.to.x.on.z", "freq_y.to.x.on.z","q_max_x.on.z","freq_max_y.to.x.on.z")
+    names(GG) <- c("frequency", "n", "GG_x.on.z","nboots","confidence_level","stat_yes", "non_stationarity_rate_1", "non_stationarity_rate_2", "delay1_mean","delay2_mean","quantile_conditional_causality_y.to.x.on.z", "freq_y.to.x.on.z","q_max_x.on.z","freq_max_y.to.x.on.z")
     }
 
     if (length(stationary)<nboots/nboots){
