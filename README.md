@@ -6,8 +6,6 @@ We have created an R package, called "grangers", containing seven functions:
 - "Granger.conditional", performing the calculation of the conditional Granger-causality spectrum;
 - "Granger.inference.unconditional", performing boostrap inference on the unconditional Granger-causality spectrum;
 - "Granger.inference.conditional", performing boostrap inference on the conditional Granger-causality spectrum;
-- "Granger.inference.difference", performing boostrap inference on the difference between an unconditional 
-   and a conditional Granger-causality spectrum;
 - "bc_test_uncond", performing the parametric test of Breitung and Candelon (2006) on the unconditional Granger-causality spectrum;
 - "bc_test_cond", performing the parametric test of Breitung and Candelon (2006) on the conditional Granger-causality spectrum.
    
